@@ -5,20 +5,23 @@ export type UsuarioDocument = Usuario & Document;
 
 @Schema({ timestamps: true })
 export class Usuario {
-  @Prop({ required: true })
+  @Prop({ required: true, trim: true })
   nombre: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true, trim: true })
+  apellidos: string;
+
+  @Prop({ required: true, unique: true, lowercase: true, trim: true })
   email: string;
 
-  @Prop()
-  avatar_url?: string;
+  @Prop({ required: true })
+  passwordHash: string; // En un entorno real debe ir hasheada (e.g. bcrypt)
 
-  @Prop()
-  biografia?: string;
-
-  @Prop({ enum: ['usuario', 'organizador', 'admin'], default: 'usuario' })
+  @Prop({ default: 'user', enum: ['user', 'admin', 'organizer'] })
   rol: string;
+
+  @Prop({ default: true })
+  isActive: boolean;
 }
 
 export const UsuarioSchema = SchemaFactory.createForClass(Usuario);
