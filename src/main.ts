@@ -29,6 +29,7 @@ async function bootstrap() {
   // Aquí definimos que la ruta para entrar sea '/api'
   SwaggerModule.setup('api', app, document); 
 
-  await app.listen(3000);
+  // Añadimos '0.0.0.0' para que el servidor acepte peticiones desde redes externas (EC2)
+  await app.listen(process.env.PORT || 3000, '0.0.0.0');
 }
 bootstrap();
