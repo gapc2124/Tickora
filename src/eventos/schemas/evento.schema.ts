@@ -30,6 +30,9 @@ export class Evento {
   @Prop({ required: true, min: 0 })
   precio: number;
 
+  @Prop({ required: true, min: 1 })
+  entradas_disponibles: number;
+
   @Prop({ type: Types.ObjectId, ref: 'Usuario', required: true })
   creador_id: Usuario | Types.ObjectId;
 }

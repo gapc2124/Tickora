@@ -7,5 +7,6 @@ export class CreateEventoDto {
   readonly categoria: string;
   readonly image_url: string;
   readonly precio: number;
+  readonly entradas_disponibles: number;
   readonly creador_id: string;
 }
