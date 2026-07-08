@@ -31,7 +31,23 @@ let UsuariosService = class UsuariosService {
             ...createUsuarioDto,
             passwordHash: createUsuarioDto.password,
         });
-        return newUser.save();
+        const savedUser = await newUser.save();
+        const userObj = savedUser.toObject();
+        delete userObj.passwordHash;
+        return userObj;
+    }
+    async login(loginDto) {
+        const { email, password } = loginDto;
+        const user = await this.usuarioModel.findOne({ email }).exec();
+        if (!user) {
+            throw new common_1.UnauthorizedException('Credenciales inválidas');
+        }
+        if (user.passwordHash !== password) {
+            throw new common_1.UnauthorizedException('Credenciales inválidas');
+        }
+        const userObj = user.toObject();
+        delete userObj.passwordHash;
+        return userObj;
     }
     async findAll() {
         return this.usuarioModel.find().select('-passwordHash').exec();

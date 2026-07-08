@@ -10,11 +10,20 @@ export class UsuariosController {
   constructor(private readonly usuariosService: UsuariosService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Crear un nuevo usuario' })
+  @ApiOperation({ summary: 'Crear un nuevo usuario (Registro)' })
   @ApiResponse({ status: 201, description: 'Usuario creado exitosamente.' })
   @ApiResponse({ status: 409, description: 'El email ya está registrado.' })
   create(@Body() createUsuarioDto: CreateUsuarioDto) {
     return this.usuariosService.create(createUsuarioDto);
+  }
+
+  @Post('login')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Iniciar sesión' })
+  @ApiResponse({ status: 200, description: 'Inicio de sesión exitoso.' })
+  @ApiResponse({ status: 401, description: 'Credenciales inválidas.' })
+  login(@Body() loginDto: any) {
+    return this.usuariosService.login(loginDto);
   }
 
   @Get()

@@ -6,6 +6,7 @@ export declare class UsuariosService {
     private readonly usuarioModel;
     constructor(usuarioModel: Model<UsuarioDocument>);
     create(createUsuarioDto: CreateUsuarioDto): Promise<Usuario>;
+    login(loginDto: any): Promise<any>;
     findAll(): Promise<Usuario[]>;
     findOne(id: string): Promise<Usuario>;
     update(id: string, updateUsuarioDto: UpdateUsuarioDto): Promise<Usuario>;

@@ -5,6 +5,7 @@ export declare class UsuariosController {
     private readonly usuariosService;
     constructor(usuariosService: UsuariosService);
     create(createUsuarioDto: CreateUsuarioDto): Promise<import("./schemas/usuario.schema").Usuario>;
+    login(loginDto: any): Promise<any>;
     findAll(): Promise<import("./schemas/usuario.schema").Usuario[]>;
     findOne(id: string): Promise<import("./schemas/usuario.schema").Usuario>;
     update(id: string, updateUsuarioDto: UpdateUsuarioDto): Promise<import("./schemas/usuario.schema").Usuario>;

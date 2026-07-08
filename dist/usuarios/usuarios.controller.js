@@ -25,6 +25,9 @@ let UsuariosController = class UsuariosController {
     create(createUsuarioDto) {
         return this.usuariosService.create(createUsuarioDto);
     }
+    login(loginDto) {
+        return this.usuariosService.login(loginDto);
+    }
     findAll() {
         return this.usuariosService.findAll();
     }
@@ -41,7 +44,7 @@ let UsuariosController = class UsuariosController {
 exports.UsuariosController = UsuariosController;
 __decorate([
     (0, common_1.Post)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Crear un nuevo usuario' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Crear un nuevo usuario (Registro)' }),
     (0, swagger_1.ApiResponse)({ status: 201, description: 'Usuario creado exitosamente.' }),
     (0, swagger_1.ApiResponse)({ status: 409, description: 'El email ya está registrado.' }),
     __param(0, (0, common_1.Body)()),
@@ -49,6 +52,17 @@ __decorate([
     __metadata("design:paramtypes", [create_usuario_dto_1.CreateUsuarioDto]),
     __metadata("design:returntype", void 0)
 ], UsuariosController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)('login'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({ summary: 'Iniciar sesión' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Inicio de sesión exitoso.' }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'Credenciales inválidas.' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], UsuariosController.prototype, "login", null);
 __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'Obtener todos los usuarios' }),

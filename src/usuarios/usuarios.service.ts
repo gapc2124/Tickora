@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Usuario, UsuarioDocument } from './schemas/usuario.schema';
@@ -25,8 +25,33 @@ export class UsuariosService {
       ...createUsuarioDto,
       passwordHash: createUsuarioDto.password, // Temporalmente guardamos el texto para simular
     });
-    return newUser.save();
+    const savedUser = await newUser.save();
+    
+    // Retornamos el usuario sin el hash
+    const userObj = savedUser.toObject();
+    delete userObj.passwordHash;
+    return userObj;
   }
+
+  async login(loginDto: any): Promise<any> {
+    const { email, password } = loginDto;
+    // Buscamos el usuario y obligamos a que nos devuelva el passwordHash que por defecto podría estar oculto
+    const user = await this.usuarioModel.findOne({ email }).exec();
+    
+    if (!user) {
+      throw new UnauthorizedException('Credenciales inválidas');
+    }
+
+    // Comprobación de texto plano (reemplazar con bcrypt.compare en el futuro)
+    if (user.passwordHash !== password) {
+      throw new UnauthorizedException('Credenciales inválidas');
+    }
+
+    const userObj = user.toObject();
+    delete userObj.passwordHash;
+    return userObj;
+  }
+
 
   async findAll(): Promise<Usuario[]> {
     // Retornamos todos excepto el passwordHash
