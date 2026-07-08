@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, InternalServerErrorException, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Evento, EventoDocument } from './schemas/evento.schema';
 import { CreateEventoDto } from './dto/create-evento.dto';
 import { UpdateEventoDto } from './dto/update-evento.dto';
@@ -10,6 +10,7 @@ import { randomUUID } from 'crypto';
 @Injectable()
 export class EventosService {
   private s3Client: S3Client;
+  private readonly logger = new Logger(EventosService.name);
 
   constructor(
     @InjectModel(Evento.name) private eventoModel: Model<EventoDocument>,
@@ -47,8 +48,33 @@ export class EventosService {
   }
 
   async create(createEventoDto: CreateEventoDto): Promise<Evento> {
-    const createdEvento = new this.eventoModel(createEventoDto);
-    return createdEvento.save();
+    try {
+      // Validar y castear el creador_id a un ObjectId de Mongoose real
+      if (!Types.ObjectId.isValid(createEventoDto.creador_id)) {
+        throw new BadRequestException('El creador_id no es un ObjectId válido de MongoDB');
+      }
+
+      // Preparar el documento inyectando el ObjectId casteado y el estado requerido
+      const documentToSave = {
+        ...createEventoDto,
+        creador_id: new Types.ObjectId(createEventoDto.creador_id),
+        precio: Number(createEventoDto.precio),
+        entradas_disponibles: Math.floor(Number(createEventoDto.entradas_disponibles)), // Asegurar que sea entero (int)
+        fecha_evento: new Date(createEventoDto.fecha_evento),
+        estado: 'publicado', // MongoDB requiere el campo 'estado' obligatoriamente en tu esquema nativo
+      };
+
+      const createdEvento = new this.eventoModel(documentToSave);
+      return await createdEvento.save();
+    } catch (error) {
+      this.logger.error('Error fatal al intentar guardar el evento en MongoDB', error.stack, error.message);
+      
+      if (error.name === 'ValidationError' || error.name === 'MongoServerError') {
+        throw new BadRequestException(`Fallo de validación en MongoDB: ${error.message}`);
+      }
+      
+      throw new InternalServerErrorException('Error interno al crear el evento');
+    }
   }
 
   async findAll(): Promise<Evento[]> {

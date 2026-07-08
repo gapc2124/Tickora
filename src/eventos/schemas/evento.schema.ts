@@ -33,6 +33,9 @@ export class Evento {
   @Prop({ required: true, min: 1 })
   entradas_disponibles: number;
 
+  @Prop({ required: true, enum: ['borrador', 'publicado', 'cancelado', 'finalizado'], default: 'publicado' })
+  estado: string;
+
   @Prop({ type: Types.ObjectId, ref: 'Usuario', required: true })
   creador_id: Usuario | Types.ObjectId;
 }
