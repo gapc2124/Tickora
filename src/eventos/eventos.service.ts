@@ -17,11 +17,11 @@ export class EventosService {
   }
 
   async findAll(): Promise<Evento[]> {
-    return this.eventoModel.find().populate('organizador', 'nombre email').exec();
+    return this.eventoModel.find().populate('creador_id', 'nombre email').exec();
   }
 
   async findOne(id: string): Promise<Evento> {
-    const evento = await this.eventoModel.findById(id).populate('organizador', 'nombre email').exec();
+    const evento = await this.eventoModel.findById(id).populate('creador_id', 'nombre email').exec();
     if (!evento) {
       throw new NotFoundException(`Evento con ID #${id} no encontrado`);
     }

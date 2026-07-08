@@ -7,13 +7,13 @@ export type EventoDocument = Evento & Document;
 @Schema({ timestamps: true })
 export class Evento {
   @Prop({ required: true })
-  nombre: string;
+  titulo: string;
 
   @Prop({ required: true })
   artista: string;
 
   @Prop({ required: true })
-  fecha: Date;
+  fecha_evento: Date;
 
   @Prop({ required: true })
   lugar: string;
@@ -21,8 +21,17 @@ export class Evento {
   @Prop()
   descripcion?: string;
 
+  @Prop({ required: true })
+  categoria: string;
+
+  @Prop({ required: true })
+  image_url: string;
+
+  @Prop({ required: true, min: 0 })
+  precio: number;
+
   @Prop({ type: Types.ObjectId, ref: 'Usuario', required: true })
-  organizador: Usuario | Types.ObjectId;
+  creador_id: Usuario | Types.ObjectId;
 }
 
 export const EventoSchema = SchemaFactory.createForClass(Evento);
