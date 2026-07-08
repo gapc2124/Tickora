@@ -2,12 +2,15 @@ import { Document, Types } from 'mongoose';
 import { Usuario } from '../../usuarios/schemas/usuario.schema';
 export type EventoDocument = Evento & Document;
 export declare class Evento {
-    nombre: string;
+    titulo: string;
     artista: string;
-    fecha: Date;
+    fecha_evento: Date;
     lugar: string;
     descripcion?: string;
-    organizador: Usuario | Types.ObjectId;
+    categoria: string;
+    image_url: string;
+    precio: number;
+    creador_id: Usuario | Types.ObjectId;
 }
 export declare const EventoSchema: import("mongoose").Schema<Evento, import("mongoose").Model<Evento, any, any, any, Document<unknown, any, Evento, any, {}> & Evento & {
     _id: Types.ObjectId;

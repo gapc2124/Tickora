@@ -17,19 +17,45 @@ const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 const evento_schema_1 = require("./schemas/evento.schema");
+const client_s3_1 = require("@aws-sdk/client-s3");
+const crypto_1 = require("crypto");
 let EventosService = class EventosService {
     constructor(eventoModel) {
         this.eventoModel = eventoModel;
+        this.s3Client = new client_s3_1.S3Client({
+            region: process.env.AWS_REGION || 'us-east-1',
+            credentials: {
+                accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
+                secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+            },
+        });
+    }
+    async uploadImage(file) {
+        if (!file) {
+            throw new common_1.BadRequestException('No file provided');
+        }
+        const bucketName = process.env.S3_BUCKET_NAME || 'tickora-imagenes-eventos-prod';
+        const region = process.env.AWS_REGION || 'us-east-1';
+        const fileExtension = file.originalname.split('.').pop();
+        const fileName = `eventos/${(0, crypto_1.randomUUID)()}.${fileExtension}`;
+        const command = new client_s3_1.PutObjectCommand({
+            Bucket: bucketName,
+            Key: fileName,
+            Body: file.buffer,
+            ContentType: file.mimetype,
+        });
+        await this.s3Client.send(command);
+        return `https://${bucketName}.s3.${region}.amazonaws.com/${fileName}`;
     }
     async create(createEventoDto) {
         const createdEvento = new this.eventoModel(createEventoDto);
         return createdEvento.save();
     }
     async findAll() {
-        return this.eventoModel.find().populate('organizador', 'nombre email').exec();
+        return this.eventoModel.find().populate('creador_id', 'nombre email').exec();
     }
     async findOne(id) {
-        const evento = await this.eventoModel.findById(id).populate('organizador', 'nombre email').exec();
+        const evento = await this.eventoModel.findById(id).populate('creador_id', 'nombre email').exec();
         if (!evento) {
             throw new common_1.NotFoundException(`Evento con ID #${id} no encontrado`);
         }

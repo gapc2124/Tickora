@@ -1,8 +1,11 @@
 export declare class CreateEventoDto {
-    readonly nombre: string;
+    readonly titulo: string;
     readonly artista: string;
-    readonly fecha: Date;
+    readonly fecha_evento: Date;
     readonly lugar: string;
     readonly descripcion?: string;
-    readonly organizador: string;
+    readonly categoria: string;
+    readonly image_url: string;
+    readonly precio: number;
+    readonly creador_id: string;
 }

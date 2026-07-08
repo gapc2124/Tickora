@@ -15,12 +15,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventosController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
+const platform_express_1 = require("@nestjs/platform-express");
 const eventos_service_1 = require("./eventos.service");
 const create_evento_dto_1 = require("./dto/create-evento.dto");
 const update_evento_dto_1 = require("./dto/update-evento.dto");
 let EventosController = class EventosController {
     constructor(eventosService) {
         this.eventosService = eventosService;
+    }
+    async uploadImage(file) {
+        if (!file) {
+            throw new common_1.BadRequestException('No se ha proporcionado ninguna imagen');
+        }
+        const imageUrl = await this.eventosService.uploadImage(file);
+        return { image_url: imageUrl };
     }
     create(createEventoDto) {
         return this.eventosService.create(createEventoDto);
@@ -39,6 +47,26 @@ let EventosController = class EventosController {
     }
 };
 exports.EventosController = EventosController;
+__decorate([
+    (0, common_1.Post)('upload'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
+    (0, swagger_1.ApiConsumes)('multipart/form-data'),
+    (0, swagger_1.ApiBody)({
+        schema: {
+            type: 'object',
+            properties: {
+                file: {
+                    type: 'string',
+                    format: 'binary',
+                },
+            },
+        },
+    }),
+    __param(0, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EventosController.prototype, "uploadImage", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),

@@ -1,15 +1,50 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Evento, EventoDocument } from './schemas/evento.schema';
 import { CreateEventoDto } from './dto/create-evento.dto';
 import { UpdateEventoDto } from './dto/update-evento.dto';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class EventosService {
+  private s3Client: S3Client;
+
   constructor(
     @InjectModel(Evento.name) private eventoModel: Model<EventoDocument>,
-  ) {}
+  ) {
+    this.s3Client = new S3Client({
+      region: process.env.AWS_REGION || 'us-east-1',
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+      },
+    });
+  }
+
+  async uploadImage(file: Express.Multer.File): Promise<string> {
+    if (!file) {
+      throw new BadRequestException('No file provided');
+    }
+
+    const bucketName = process.env.S3_BUCKET_NAME || 'tickora-imagenes-eventos-prod';
+    const region = process.env.AWS_REGION || 'us-east-1';
+    
+    const fileExtension = file.originalname.split('.').pop();
+    const fileName = `eventos/${randomUUID()}.${fileExtension}`;
+
+    const command = new PutObjectCommand({
+      Bucket: bucketName,
+      Key: fileName,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+    });
+
+    await this.s3Client.send(command);
+
+    return `https://${bucketName}.s3.${region}.amazonaws.com/${fileName}`;
+  }
 
   async create(createEventoDto: CreateEventoDto): Promise<Evento> {
     const createdEvento = new this.eventoModel(createEventoDto);

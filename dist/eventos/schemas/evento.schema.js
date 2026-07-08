@@ -18,7 +18,7 @@ exports.Evento = Evento;
 __decorate([
     (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", String)
-], Evento.prototype, "nombre", void 0);
+], Evento.prototype, "titulo", void 0);
 __decorate([
     (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", String)
@@ -26,7 +26,7 @@ __decorate([
 __decorate([
     (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", Date)
-], Evento.prototype, "fecha", void 0);
+], Evento.prototype, "fecha_evento", void 0);
 __decorate([
     (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", String)
@@ -36,9 +36,21 @@ __decorate([
     __metadata("design:type", String)
 ], Evento.prototype, "descripcion", void 0);
 __decorate([
+    (0, mongoose_1.Prop)({ required: true }),
+    __metadata("design:type", String)
+], Evento.prototype, "categoria", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ required: true }),
+    __metadata("design:type", String)
+], Evento.prototype, "image_url", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ required: true, min: 0 }),
+    __metadata("design:type", Number)
+], Evento.prototype, "precio", void 0);
+__decorate([
     (0, mongoose_1.Prop)({ type: mongoose_2.Types.ObjectId, ref: 'Usuario', required: true }),
     __metadata("design:type", Object)
-], Evento.prototype, "organizador", void 0);
+], Evento.prototype, "creador_id", void 0);
 exports.Evento = Evento = __decorate([
     (0, mongoose_1.Schema)({ timestamps: true })
 ], Evento);
